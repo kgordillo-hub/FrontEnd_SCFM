@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script-->
+	<script type="text/javascript" src="smoothie.js"></script>
+</head>
+
+<body>
+
+    <h1>Grafico</h1>
+    <p>Grafico de sistema ciberfísico</p>
+    <div id="chart"></div>
+	<canvas id="mycanvas" width="400" height="250"></canvas>
+    <script>
+        var conected = false;
+        class WebSocketClient {
+
+            constructor(protocol, hostname, port, endpoint) {
+
+                this.webSocket = null;
+
+                this.protocol = protocol;
+                this.hostname = hostname;
+                this.port = port;
+                this.endpoint = endpoint;
+            }
+
+            getServerUrl() {
+                return this.protocol + "://" + this.hostname + ":" + this.port + this.endpoint;
+            }
+
+            connect() {
+                try {
+                    this.webSocket = new WebSocket(this.getServerUrl());
+
+                    //
+                    // Implement WebSocket event handlers!
+                    //
+                    this.webSocket.onopen = function(event) {
+                        console.log('onopen::' + JSON.stringify(event, null, 4));
+                        conected = true;
+                    }
+
+                    this.webSocket.onmessage = function(event) {
+                        var msg = event.data;
+						console.log('onmessage::' + JSON.stringify(msg, null, 4));
+						graficar(msg);
+                    }
+                    this.webSocket.onclose = function(event) {
+                        console.log('onclose::' + JSON.stringify(event, null, 4));
+                    }
+                    this.webSocket.onerror = function(event) {
+                        console.log('onerror::' + JSON.stringify(event, null, 4));
+                        conected = false;
+                    }
+
+                } catch (exception) {
+                    console.error(exception);
+                    throw new Error("Error en websockessst");
+                }
+            }
+
+            getStatus() {
+                return this.webSocket.readyState;
+            }
+            send(message) {
+
+                if (this.webSocket.readyState == WebSocket.OPEN) {
+                    this.webSocket.send(message);
+
+                } else {
+                    console.error('webSocket is not open. readyState=' + this.webSocket.readyState);
+                }
+            }
+            disconnect() {
+                if (this.webSocket.readyState == WebSocket.OPEN) {
+                    this.webSocket.close();
+
+                } else {
+                    console.error('webSocket is not open. readyState=' + this.webSocket.readyState);
+                }
+            }
+        }
+        var millisecondsToWait = 15000;
+
+        function waitForConnection() {
+            conectToServer();
+            console.log('Esperando por conexion...');
+            setTimeout(function() {
+                if (!conected) {
+                    setTimeout(function() {
+                        waitForConnection();
+                    }, millisecondsToWait);
+                } else {
+                    console.log('Conexion establecida con WebSocket');
+                    //graficar();
+                    conected = true;
+                }
+            }, 5000);
+
+        }
+
+        function conectToServer() {
+            try {
+                var client = new WebSocketClient('ws', '127.0.0.1', 8081, '/WebSocketServer/endpoint?push=TIME');
+                client.connect();
+            } catch (err) {
+                Console.log("ss");
+            }
+        }
+        waitForConnection();
+    </script>
+
+    <!--script>
+        function graficar() {
+            function getData() {
+                return Math.random();
+            }
+            Plotly.plot('chart', [{
+                y: [getData()],
+                type: 'line'
+            }]);
+
+            var cnt = 0;
+            setInterval(function() {
+                Plotly.extendTraces('chart', {
+                    y: [
+                        [getData()]
+                    ]
+                }, [0]);
+                cnt = cnt + 1;
+                if (cnt > 200) {
+                    Plotly.relayout('chart', {
+                        xaxis: {
+                            range: [cnt - 200, cnt]
+                        }
+                    });
+                }
+            }, 5);
+        }
+    </script-->
+	
+	<!--script>
+		Plotly.plot('chart', [{
+                y: [500],
+                type: 'line'
+            }]);
+			var cnt = 0;
+		function graficar(valorGraficar) {
+            /*function getData() {
+                return Math.random();
+            }*/
+            		
+			Plotly.extendTraces('chart', {
+                    y: [
+                        [valorGraficar]
+                    ]
+                }, [0]);
+			cnt = cnt + 1;
+                if (cnt > 5) {
+                    Plotly.relayout('chart', {
+                        xaxis: {
+                            range: [cnt - 5, cnt]
+                        }
+                    });
+                };
+            
+            /*var cnt = 0;
+            setInterval(function() {
+                Plotly.extendTraces('chart', {
+                    y: [
+                        [getData()]
+                    ]
+                }, [0]);
+                cnt = cnt + 1;
+                if (cnt > 200) {
+                    Plotly.relayout('chart', {
+                        xaxis: {
+                            range: [cnt - 200, cnt]
+                        }
+                    });
+                }
+            }, 5);*/
+        }
+	</script-->
+	<script>
+	var smoothie = new SmoothieChart({grid:{fillStyle:'#ffffff',strokeStyle:'#0080ff',sharpLines:true,verticalSections:3},maxValue:700,minValue:400});
+	smoothie.streamTo(document.getElementById("mycanvas"),1000);
+		var line1 = new TimeSeries();
+
+	function graficar(valorGraficar){	
+		line1.append(new Date().getTime(), valorGraficar);
+		/*setInterval(function() {
+		  line1.append(new Date().getTime(), valorGraficar);
+		}, 1000);*/
+		smoothie.addTimeSeries(line1,{lineWidth:2,strokeStyle:'#ff0000'});
+	}
+	</script>
+
+</body>
+
+</html>
