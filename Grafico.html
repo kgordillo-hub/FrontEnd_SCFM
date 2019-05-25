@@ -191,13 +191,13 @@
 	var smoothie = new SmoothieChart({grid:{fillStyle:'#ffffff',strokeStyle:'#0080ff',sharpLines:true,verticalSections:3},maxValue:900,minValue:0});
 	smoothie.streamTo(document.getElementById("mycanvas"),1000);
 		var line1 = new TimeSeries();
+		smoothie.addTimeSeries(line1,{lineWidth:2,strokeStyle:'#ff0000'});
 
 	function graficar(valorGraficar){	
 		line1.append(new Date().getTime(), valorGraficar);
 		/*setInterval(function() {
 		  line1.append(new Date().getTime(), valorGraficar);
 		}, 1000);*/
-		smoothie.addTimeSeries(line1,{lineWidth:2,strokeStyle:'#ff0000'});
 	}
 	</script>
 
