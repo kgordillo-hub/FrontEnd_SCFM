@@ -27,8 +27,11 @@
             }
 
             getServerUrl() {
-                return this.protocol + "://" + this.hostname + ":" + this.port + this.endpoint;
-            }
+				//if(!this.port==-1){
+                return this.protocol + "://" + this.hostname + ":" + this.port + this.endpoint;}
+				//else{
+				//return this.protocol + "://" + this.hostname + this.endpoint;}
+            //}
 
             connect() {
                 try {
@@ -103,7 +106,7 @@
 
         function conectToServer() {
             try {
-                var client = new WebSocketClient('ws', '127.0.0.1', 8081, '/WebSocketServer/endpoint?push=TIME');
+                var client = new WebSocketClient('ws', '52.167.48.18', 8080, '/WebSocketServer/endpoint?push=TIME');
                 client.connect();
             } catch (err) {
                 Console.log("ss");
@@ -185,7 +188,7 @@
         }
 	</script-->
 	<script>
-	var smoothie = new SmoothieChart({grid:{fillStyle:'#ffffff',strokeStyle:'#0080ff',sharpLines:true,verticalSections:3},maxValue:700,minValue:400});
+	var smoothie = new SmoothieChart({grid:{fillStyle:'#ffffff',strokeStyle:'#0080ff',sharpLines:true,verticalSections:3},maxValue:900,minValue:0});
 	smoothie.streamTo(document.getElementById("mycanvas"),1000);
 		var line1 = new TimeSeries();
 
