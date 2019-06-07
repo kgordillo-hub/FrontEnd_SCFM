@@ -18,10 +18,11 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
+		conected=true;
         console.log('Connected: ' + frame);
 		//Suscripcion al topico
         stompClient.subscribe('/topic/medicalSignal', function (mensajebroadcast) {
-            showGreeting(JSON.parse(mensajebroadcast.body).contenido);
+            graficar(JSON.parse(mensajebroadcast.body).contenido);
         });
     });
 }
@@ -38,18 +39,18 @@ function sendName() {
     stompClient.send("/app/sendSignal", {}, JSON.stringify({'name': $("#name").val()}));
 }
 
-function showGreeting(message) {
+/*function showGreeting(message) {
 	//alert(message);
 	//var obj = JSON.parse(message);
     $("#greetings").append("<tr><td>" + message + "</td></tr>");
-}
+}*/
 
 
-connect();
+
 $(function () {
-    $("form").on('submit', function (e) {
+    /*$("form").on('submit', function (e) {
         e.preventDefault();
-    });
+    });*/
    // $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendName(); });
